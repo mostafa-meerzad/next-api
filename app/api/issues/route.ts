@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -16,7 +17,12 @@ export async function POST(request: NextRequest) {
 
   if (!validation.success)
     return NextResponse.json(validation.error.errors, { status: 400 });
-  console.log("body: ", body);
 
-  return NextResponse.json({ message: "thanks for posting", data: body });
+  const newIssue = await prisma.issue.create({
+    data: { title: body.title, description: body.description },
+  });
+
+  // console.log("body: ", body);
+
+  return NextResponse.json(newIssue, { status: 201 });
 }
